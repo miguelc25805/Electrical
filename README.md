@@ -48,19 +48,67 @@ device, and moves between people as a file, the same way drawings already do.
 
 ---
 
-## Running it
+## Trying it on your own machine
+
+You need [Node.js](https://nodejs.org) 20 or newer — download the LTS installer,
+click through it, and reopen your terminal. Then:
 
 ```bash
+git clone https://github.com/miguelc25805/Electrical.git
+cd Electrical
 npm install
-npm run dev        # development server
-npm test           # calculation engine test suite
-npm run build      # production build into dist/
-npm run preview    # serve the production build
+npm run dev
 ```
 
-`dist/` is plain static files with a relative base — host it on GitHub Pages, a
-shop intranet folder, or open it from a laptop in the trailer. No server-side
-rewrite rules to configure.
+Open the URL it prints (usually `http://localhost:5173`) and click **Open the
+example job**. That's a fully populated five-story medical office job you can
+poke at without entering anything.
+
+### Testing offline and home-screen install, for real
+
+```bash
+npm run build && npm run preview
+```
+
+Service workers are allowed on `localhost`, so this is where offline and install
+actually work. Open the printed URL, use the browser's **Install** / **Add to
+Home Screen** option, then turn off wifi and reload — the app and your job data
+both still come up.
+
+### All the commands
+
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server with hot reload |
+| `npm run build` | Production build into `dist/` |
+| `npm run preview` | Serve the production build on localhost (service worker works) |
+| `npm test` | Calculation engine test suite |
+| `npm run lint` | Lint |
+| `npm run build:preview` | Single-file build for sharing a preview (no offline) |
+
+### A caveat about testing on your phone
+
+`npm run dev -- --host` will serve the app to a phone on the same wifi, but over
+plain HTTP a browser won't treat it as a secure context — so it runs as an
+ordinary web page with **no offline mode and no install**. For real phone
+testing you need HTTPS, which means deploying it (below).
+
+---
+
+## Putting it somewhere foremen can reach it
+
+`dist/` is plain static files with a relative base, so any static host works.
+The repo is currently **private**, which matters because GitHub Pages needs a
+paid plan for private repos. Three ways forward:
+
+| Option | Cost | Notes |
+|---|---|---|
+| Make the repo public, use **GitHub Pages** | free | Simplest. The app keeps every job on the user's own device, so a public repo exposes the code, never anyone's job data. |
+| Keep it private, use **Cloudflare Pages** or Netlify | free | Both deploy from a private GitHub repo and give an HTTPS URL. |
+| Keep it private, **GitHub Pro** | ~$4/mo | Unlocks Pages for private repos. |
+
+Any of them gives a permanent URL a foreman can open once and install to their
+home screen, after which it runs offline forever.
 
 ### Installing on a phone or tablet
 

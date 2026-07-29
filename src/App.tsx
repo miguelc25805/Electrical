@@ -1,6 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { useActiveProject, useProjectStore } from './store/project'
+import {
+  getStorageMode,
+  useActiveProject,
+  useProjectStore,
+  type StorageMode,
+} from './store/project'
 import {
   IconCompliance,
   IconCrew,
@@ -84,6 +89,7 @@ export default function App() {
       {showChrome && <Sidebar />}
 
       <main className="flex-1 overflow-y-auto pb-24 sm:pb-0">
+        <StorageWarning />
         <Routes>
           <Route path="/" element={<Navigate to={project ? '/dashboard' : '/projects'} replace />} />
           <Route path="/projects" element={<Projects />} />
@@ -103,6 +109,39 @@ export default function App() {
       </main>
 
       {showChrome && <TabBar />}
+    </div>
+  )
+}
+
+/**
+ * Warns when nothing is being saved to disk.
+ *
+ * A GF who reports a day of production and loses it has been actively harmed by
+ * this app, so a degraded storage backend is never allowed to stay quiet.
+ */
+function StorageWarning() {
+  const hydrated = useProjectStore((s) => s.hydrated)
+  const [mode, setMode] = useState<StorageMode>('indexeddb')
+
+  useEffect(() => {
+    // The backend is only known after the first read or write settles.
+    const id = setInterval(() => setMode(getStorageMode()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  if (!hydrated || mode !== 'memory') return null
+
+  return (
+    <div
+      className="px-4 py-3 text-sm"
+      style={{
+        background: 'color-mix(in srgb, var(--color-risk-500) 18%, transparent)',
+        borderBottom: '1px solid var(--color-risk-500)',
+      }}
+    >
+      <strong>This browser is not letting the app save anything.</strong> You can look
+      around, but nothing you enter will still be here after you close the tab. Turn off
+      private browsing, or allow site data for this page, then reload.
     </div>
   )
 }

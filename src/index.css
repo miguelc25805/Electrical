@@ -89,7 +89,11 @@
   color-scheme: dark;
 }
 
-html.light {
+/* `html.light` is the app's own toggle. `[data-theme='light']` is what an
+   embedding host stamps on the root element — honoring both means the app
+   follows the viewer's theme wherever it happens to be rendered. */
+html.light,
+html[data-theme='light'] {
   --app-bg: #eef1f7;
   --app-surface: #ffffff;
   --app-surface-2: #f5f7fc;
