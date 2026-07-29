@@ -107,6 +107,11 @@ default branch and it redeploys** — install, run the engine test suite, lint,
 build, publish `dist/` to GitHub Pages. A failing test blocks the deploy, so
 broken labor math never reaches a field device.
 
+> **One-time setup:** GitHub Pages has to be switched on for the repository
+> under **Settings → Pages → Build and deployment → Source: _GitHub Actions_**.
+> The workflow cannot do this itself — the token Actions runs with is not
+> allowed to create a Pages site.
+
 Anyone who already installed the app picks up the new version on next launch;
 the service worker is registered with `autoUpdate`.
 
