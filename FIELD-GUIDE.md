@@ -6,7 +6,8 @@ Print this. Hand it to a foreman. That's the whole training program.
 
 ## First time — about ten minutes
 
-1. Open the link. Tap **Add to Home Screen** so it works with no signal.
+1. Open **miguelc25805.github.io/Electrical** on your phone. Tap **Add to Home
+   Screen** so it works with no signal.
 2. Tap **Open the example job** and poke around for five minutes. Nothing you do
    there touches a real job.
 3. Tap the job name (top left) → **New job**, and walk the five setup steps:

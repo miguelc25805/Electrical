@@ -1,0 +1,71 @@
+name: Deploy to GitHub Pages
+
+# Publishes the app to https://miguelc25805.github.io/Electrical/ on every push
+# to the default branch. That URL is the whole delivery mechanism: a foreman
+# opens it once, adds it to their home screen, and from then on it runs offline.
+#
+# Both branch names are listed so a deploy still happens whether or not the
+# repository default has been switched over to `main` yet.
+
+on:
+  push:
+    branches:
+      - main
+      - claude/union-electrician-labor-tool-r56nve
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never interrupt a deploy that is already publishing.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # The engine suite gates the deploy. Apprentice-ratio, earned-value and
+      # wage math arriving broken on a field device is the one failure worth
+      # blocking a release for — everything else can be fixed in the next push.
+      - name: Test calculation engine
+        run: npm test
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # `enablement` switches Pages on the first time this runs, so there is no
+      # manual setup step in the repository settings.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

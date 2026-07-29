@@ -1,5 +1,10 @@
 # GF Field Command
 
+### → **[miguelc25805.github.io/Electrical](https://miguelc25805.github.io/Electrical/)**
+
+Open that on a phone, tap **Add to Home Screen**, and from then on it runs with
+no signal at all.
+
 Labor planning, manpower dispatch, material procurement, phase scheduling and
 forecasting for union electrical general foremen.
 
@@ -95,25 +100,28 @@ testing you need HTTPS, which means deploying it (below).
 
 ---
 
-## Putting it somewhere foremen can reach it
+## Deployment
 
-`dist/` is plain static files with a relative base, so any static host works.
-The repo is currently **private**, which matters because GitHub Pages needs a
-paid plan for private repos. Three ways forward:
+The live site is published by `.github/workflows/deploy.yml`. **Push to the
+default branch and it redeploys** — install, run the engine test suite, lint,
+build, publish `dist/` to GitHub Pages. A failing test blocks the deploy, so
+broken labor math never reaches a field device.
 
-| Option | Cost | Notes |
-|---|---|---|
-| Make the repo public, use **GitHub Pages** | free | Simplest. The app keeps every job on the user's own device, so a public repo exposes the code, never anyone's job data. |
-| Keep it private, use **Cloudflare Pages** or Netlify | free | Both deploy from a private GitHub repo and give an HTTPS URL. |
-| Keep it private, **GitHub Pro** | ~$4/mo | Unlocks Pages for private repos. |
+Anyone who already installed the app picks up the new version on next launch;
+the service worker is registered with `autoUpdate`.
 
-Any of them gives a permanent URL a foreman can open once and install to their
-home screen, after which it runs offline forever.
+`dist/` is plain static files with a relative base, so it also runs from any
+other static host — a shop intranet folder, Cloudflare Pages, Netlify — with no
+server-side rewrite rules to configure.
 
 ### Installing on a phone or tablet
 
-Open the page, then use the browser's **Add to Home Screen** / **Install**
-option. It then launches like any other app and runs offline.
+Open [the live link](https://miguelc25805.github.io/Electrical/), then use the
+browser's **Add to Home Screen** / **Install** option. It launches like any
+other app and runs offline.
+
+> The app keeps every job on the user's own device and uploads nothing, so this
+> repository being public exposes the code — never anyone's job data.
 
 ---
 
