@@ -1,0 +1,257 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   GF Field Command — design tokens
+
+   Visual language borrows from the things already on the job: panel schedules,
+   wire labels, meter faces, caution tape. Rule-lines and tabular numerals over
+   soft cards and gradients. Every status color maps to what the trade already
+   reads at a glance — green go, amber watch, red stop.
+   =========================================================================== */
+
+@theme {
+  /* Surfaces — deep navy-slate rather than pure black: less glare in a dark
+     electrical room, less smear on a cheap tablet LCD. */
+  --color-pit-900: #0b1220;
+  --color-pit-800: #101a2c;
+  --color-pit-700: #16223a;
+  --color-pit-600: #1e2d4a;
+  --color-pit-500: #2a3a5a;
+  --color-pit-400: #3d5075;
+
+  --color-ink-50: #f7f9fd;
+  --color-ink-100: #eef3fb;
+  --color-ink-300: #c3d0e6;
+  --color-ink-400: #93a4c4;
+  --color-ink-500: #6d7f9f;
+
+  /* Safety amber — hard hats, caution tape, the trade's own accent. */
+  --color-amp-300: #ffd071;
+  --color-amp-400: #ffb020;
+  --color-amp-500: #f59300;
+  --color-amp-600: #c26f00;
+
+  /* --- Status ------------------------------------------------------------
+     The app's whole meaning vocabulary. Reserved: a status color never doubles
+     as a chart series, and never carries meaning without an icon and a label
+     beside it — two of these sit below 3:1 on a white surface by design. */
+  --color-go-500: #0ca30c;
+  --color-watch-500: #fab219;
+  --color-serious-500: #ec835a;
+  --color-risk-500: #d03b3b;
+
+  /* --- Chart series ------------------------------------------------------
+     Validated categorical order. Assigned in fixed order, never cycled — the
+     app never puts more than four series on one plot (crew classifications;
+     earned vs actual). Each mode is stepped for its own surface. */
+  --color-series-1: #3987e5; /* dark-mode steps; light overrides below */
+  --color-series-2: #d95926;
+  --color-series-3: #199e70;
+  --color-series-4: #c98500;
+
+  /* --- Sequential ramp ---------------------------------------------------
+     One hue, light→dark, for magnitude: the work matrix heat grid and any
+     other continuous fill. Phase identity is carried by its code in text, not
+     by an eleven-hue palette no one could tell apart. */
+  --color-seq-100: #cde2fb;
+  --color-seq-200: #9ec5f4;
+  --color-seq-300: #6da7ec;
+  --color-seq-400: #3987e5;
+  --color-seq-500: #256abf;
+  --color-seq-600: #184f95;
+  --color-seq-700: #0d366b;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
+  --font-mono:
+    ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  /* Gloves-on touch targets. Nothing interactive goes below --spacing-tap. */
+  --spacing-tap: 3rem; /* 48px */
+  --spacing-tap-lg: 3.5rem; /* 56px */
+}
+
+/* --- Theme surfaces --------------------------------------------------------
+   Dark is the default (electrical rooms, early call times, night shift).
+   Light exists for direct sun on a tablet, where max luminance wins. */
+:root {
+  --app-bg: var(--color-pit-900);
+  --app-surface: var(--color-pit-800);
+  --app-surface-2: var(--color-pit-700);
+  --app-raised: var(--color-pit-600);
+  --app-line: var(--color-pit-500);
+  --app-line-soft: #1b2740;
+  --app-text: var(--color-ink-100);
+  --app-text-muted: var(--color-ink-400);
+  --app-text-dim: var(--color-ink-500);
+  color-scheme: dark;
+}
+
+html.light {
+  --app-bg: #eef1f7;
+  --app-surface: #ffffff;
+  --app-surface-2: #f5f7fc;
+  --app-raised: #ffffff;
+  --app-line: #c3ccdd;
+  --app-line-soft: #e2e8f2;
+  --app-text: #0b1220;
+  --app-text-muted: #4c5b76;
+  --app-text-dim: #6d7f9f;
+  color-scheme: light;
+
+  /* Same four hues, stepped for the light surface — a selected palette, not an
+     automatic flip of the dark one. */
+  --color-series-1: #2a78d6;
+  --color-series-2: #eb6834;
+  --color-series-3: #1baf7a;
+  --color-series-4: #eda100;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--app-bg);
+    color: var(--app-text);
+    font-family: var(--font-sans);
+    /* Numbers line up in columns everywhere — this is a spreadsheet's job. */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    /* Never let a stray double-tap zoom the page mid-entry. */
+    touch-action: manipulation;
+  }
+
+  /* iOS refuses to honor a font size below 16px without zooming on focus. */
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-amp-400);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--app-line);
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  /* Hairline rules do the structural work that cards and shadows usually do. */
+  .surface {
+    background: var(--app-surface);
+    border: 1px solid var(--app-line-soft);
+  }
+  .surface-2 {
+    background: var(--app-surface-2);
+    border: 1px solid var(--app-line-soft);
+  }
+
+  /* A stat a GF reads from six feet away. */
+  .readout {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* Small-caps label — the panel-directory voice used above every number. */
+  .label-cap {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--app-text-muted);
+  }
+
+  /* Diagonal hazard hatching, for blocked / not-ready / over-ratio states. */
+  .hazard {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 6px,
+      color-mix(in srgb, var(--color-risk-500) 22%, transparent) 6px,
+      color-mix(in srgb, var(--color-risk-500) 22%, transparent) 12px
+    );
+  }
+}
+
+/* --- Print -----------------------------------------------------------------
+   The job trailer runs on paper. The hall, the GC and the shop all still want
+   a printout, so every report renders to clean white sheets. */
+@media print {
+  :root,
+  html.light {
+    --app-bg: #ffffff;
+    --app-surface: #ffffff;
+    --app-surface-2: #ffffff;
+    --app-raised: #ffffff;
+    --app-line: #94a3b8;
+    --app-line-soft: #cbd5e1;
+    --app-text: #000000;
+    --app-text-muted: #334155;
+    --app-text-dim: #475569;
+    color-scheme: light;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .print-page {
+    break-after: page;
+  }
+
+  /* Never split a schedule row across two sheets. */
+  tr,
+  .print-keep {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 0.5in;
+  }
+}
+
+.print-only {
+  display: none;
+}
